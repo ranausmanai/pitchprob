@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16341f"/>
+      <stop offset="1" stop-color="#07090f"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd76a"/>
+      <stop offset="1" stop-color="#c8902b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- pitch center circle -->
+  <circle cx="32" cy="32" r="20" fill="none" stroke="#2c5e3a" stroke-width="2.2"/>
+  <line x1="32" y1="12" x2="32" y2="52" stroke="#2c5e3a" stroke-width="2.2"/>
+  <!-- probability arc sweeping ~62% -->
+  <circle cx="32" cy="32" r="20" fill="none" stroke="url(#gold)" stroke-width="4.2"
+          stroke-linecap="round" stroke-dasharray="78 126" transform="rotate(-90 32 32)"/>
+  <!-- ball -->
+  <circle cx="32" cy="32" r="8.5" fill="#f2f6fa"/>
+  <path d="M32 25.5l5.4 3.9-2 6.3h-6.8l-2-6.3z" fill="#0c1f14"/>
+  <circle cx="32" cy="32" r="8.5" fill="none" stroke="#0c1f14" stroke-width="0.8" opacity="0.5"/>
+</svg>

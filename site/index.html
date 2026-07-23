@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7VWRP4MYZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7VWRP4MYZJ');
+</script>
+<title>PitchProb — The model called the champion · World Cup 2026</title>
+<meta name="description" content="A prediction model that logged every World Cup 2026 forecast before kickoff. Watch its title odds evolve across the whole tournament — 63% accuracy, it called the champion, and one honest null result.">
+<link rel="canonical" href="https://pitchprob.xyz/">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<meta name="theme-color" content="#0a0e14">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="PitchProb">
+<meta property="og:title" content="The model called the champion — PitchProb World Cup 2026">
+<meta property="og:description" content="Watch every team's title odds evolve across the whole tournament. 63% accuracy on 103 pre-registered forecasts. It called the exact final.">
+<meta property="og:url" content="https://pitchprob.xyz/">
+<meta property="og:image" content="https://pitchprob.xyz/report-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The model called the champion — PitchProb World Cup 2026">
+<meta name="twitter:description" content="Watch every team's title odds evolve across the tournament. 63% accuracy, pre-registered.">
+<meta name="twitter:image" content="https://pitchprob.xyz/report-og.png">
+<style>
+  :root {
+    --bg: #0a0e14; --panel: #10161f; --panel-2: #151d28; --line: #223042;
+    --ink: #eef3f8; --muted: #8b97a8; --gold: #e8bb4d; --gold-deep: #b8860b;
+    --win: #3fd07a; --data: #5aa7ff; --miss: #ff5c52; --draw: #d9a62e;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.55;
+    background-image: radial-gradient(900px 460px at 20% -8%, rgba(63,208,122,0.10), transparent 62%),
+      radial-gradient(760px 420px at 88% -6%, rgba(232,187,77,0.10), transparent 60%);
+    background-attachment: fixed; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 40px 22px 80px; }
+  .eyebrow { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.32em;
+    text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  h1 { font-size: clamp(2.3rem, 6.2vw, 4rem); line-height: 0.99; font-weight: 850;
+    letter-spacing: -0.028em; text-wrap: balance; margin: 14px 0 0; }
+  h1 .glow { color: var(--gold); }
+  .dek { color: var(--muted); font-size: 1.06rem; max-width: 64ch; margin-top: 18px; }
+  .dek strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- the race chart ---- */
+  .race { margin-top: 40px; border: 1px solid var(--line); border-radius: 18px;
+    background: linear-gradient(170deg, rgba(232,187,77,0.05), rgba(16,22,31,0.5)); padding: 22px 20px 16px; }
+  .race-head { display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+  .race-title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; }
+  .race-sub { color: var(--muted); font-size: 0.82rem; }
+  .race-svg-wrap { width: 100%; overflow: hidden; }
+  svg.race-svg { width: 100%; height: auto; display: block; }
+  .grid-line { stroke: rgba(99,117,145,0.14); stroke-width: 1; }
+  .axis-txt { fill: var(--muted); font-family: var(--mono); font-size: 11px; }
+  .phase-band { fill: rgba(99,117,145,0.04); }
+  .phase-band.alt { fill: rgba(99,117,145,0.09); }
+  .phase-lab { fill: var(--muted); font-family: var(--mono); font-size: 9.5px;
+    letter-spacing: 0.12em; text-transform: uppercase; }
+  .team-line { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .end-lab { font-family: var(--sans); font-weight: 700; font-size: 12px; }
+  .end-dot { stroke: var(--bg); stroke-width: 1.5; }
+  .race-cap { color: var(--muted); font-size: 0.82rem; margin-top: 12px; line-height: 1.5; }
+  .race-cap b { color: var(--ink); }
+  .replay { background: var(--panel-2); border: 1px solid var(--line); color: var(--muted);
+    font-family: var(--mono); font-size: 0.72rem; padding: 5px 12px; border-radius: 16px;
+    cursor: pointer; letter-spacing: 0.05em; }
+  .replay:hover { color: var(--ink); border-color: var(--muted); }
+  @media (prefers-reduced-motion: no-preference) {
+    .team-line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .team-line.draw { transition: stroke-dashoffset 2.6s cubic-bezier(0.33,0.9,0.4,1); stroke-dashoffset: 0; }
+    .end-lab, .end-dot { opacity: 0; transition: opacity 0.5s ease 2.4s; }
+    .end-lab.show, .end-dot.show { opacity: 1; }
+  }
+
+  /* hero scoreline */
+  .hero-score { margin-top: 40px; border: 1px solid var(--line); border-radius: 16px;
+    background: linear-gradient(160deg, rgba(232,187,77,0.09), rgba(16,22,31,0.4) 55%);
+    padding: 24px 26px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; }
+  .hs-side { text-align: center; }
+  .hs-flag { font-size: 2.8rem; line-height: 1; }
+  .hs-name { font-weight: 800; font-size: 1.2rem; margin-top: 6px; }
+  .hs-role { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+  .hs-mid { text-align: center; }
+  .hs-scoreline { font-family: var(--mono); font-size: 2rem; font-weight: 700;
+    font-variant-numeric: tabular-nums; }
+  .hs-tag { display: inline-block; margin-top: 8px; font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--bg); background: var(--gold);
+    padding: 3px 10px; border-radius: 20px; }
+  .hs-called { margin-top: 18px; text-align: center; color: var(--muted); font-size: 0.9rem;
+    grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 14px; }
+  .hs-called b { color: var(--win); }
+
+  section { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+  .sec-num { font-family: var(--mono); font-size: 0.8rem; color: var(--gold-deep); font-weight: 700; }
+  .sec-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+  .sec-sub { color: var(--muted); font-size: 0.92rem; margin: 8px 0 22px; max-width: 66ch; }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px 18px; position: relative; overflow: hidden; }
+  .tile::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--accent, var(--gold)); }
+  .tile.t-win { --accent: var(--win); } .tile.t-data { --accent: var(--data); } .tile.t-gold { --accent: var(--gold); }
+  .tile-fig { font-family: var(--mono); font-size: 2.4rem; font-weight: 700; line-height: 1;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .tile-fig .unit { font-size: 1.1rem; color: var(--muted); }
+  .tile-label { font-size: 0.82rem; font-weight: 600; margin-top: 12px; }
+  .tile-note { color: var(--muted); font-size: 0.75rem; margin-top: 4px; line-height: 1.4; }
+
+  .bars { display: flex; flex-direction: column; gap: 13px; }
+  .bar-row { display: grid; grid-template-columns: 128px 1fr 50px; align-items: center; gap: 14px; }
+  .bar-lab { font-size: 0.88rem; color: var(--muted); } .bar-lab b { color: var(--ink); }
+  .bar-track { height: 26px; background: var(--panel-2); border-radius: 7px; overflow: hidden; border: 1px solid var(--line); }
+  .bar-fill { height: 100%; border-radius: 6px 0 0 6px; display: flex; align-items: center;
+    justify-content: flex-end; padding-right: 8px; color: var(--bg); font-weight: 800; font-size: 0.78rem; font-family: var(--mono); }
+  .bar-val { font-family: var(--mono); font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; font-size: 0.9rem; }
+  .f-model { background: linear-gradient(90deg, var(--gold-deep), var(--gold)); }
+  .f-book { background: linear-gradient(90deg, #3a4657, #556478); }
+  .f-rand { background: linear-gradient(90deg, #2a3444, #3a4657); }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px 26px; }
+  .card p { color: var(--muted); font-size: 0.98rem; } .card p + p { margin-top: 12px; }
+  .card p strong, .card p b { color: var(--ink); font-weight: 600; }
+  .lede { font-size: 1.06rem; color: var(--ink); font-weight: 500; }
+  .calib { display: flex; flex-direction: column; gap: 12px; }
+  .cal-row { display: grid; grid-template-columns: 118px 1fr; gap: 14px; align-items: center; }
+  .cal-band { font-family: var(--mono); font-size: 0.84rem; }
+  .cal-pair { display: flex; flex-direction: column; gap: 5px; }
+  .cal-line { display: flex; align-items: center; gap: 8px; }
+  .cal-key { font-size: 0.66rem; width: 58px; color: var(--muted); font-family: var(--mono); text-transform: uppercase; }
+  .cal-bar { height: 12px; border-radius: 4px; }
+  .cal-pred { background: #45536a; } .cal-act { background: var(--win); }
+  .cal-num { font-family: var(--mono); font-size: 0.74rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .null-card { border-color: rgba(90,167,255,0.4); background: linear-gradient(150deg, rgba(90,167,255,0.07), rgba(16,22,31,0.3)); }
+  .null-figs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+  .null-fig { text-align: center; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .null-fig .nf { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .null-fig .nl { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+  .verdict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .vc { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; }
+  .vc h3 { font-size: 1.02rem; margin-bottom: 8px; }
+  .vc.yes h3 { color: var(--win); } .vc.no h3 { color: var(--miss); }
+  .vc ul { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-top: 6px; }
+  .vc li { color: var(--muted); font-size: 0.9rem; padding-left: 20px; position: relative; }
+  .vc li::before { content: ""; position: absolute; left: 0; top: 8px; width: 8px; height: 8px; border-radius: 2px; }
+  .vc.yes li::before { background: var(--win); } .vc.no li::before { background: var(--miss); }
+
+  .paper-cta { margin-top: 22px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    justify-content: space-between; padding: 22px 26px; border-radius: 14px;
+    border: 1px solid rgba(232,187,77,0.42);
+    background: linear-gradient(135deg, rgba(232,187,77,0.12), rgba(16,22,31,0.4) 60%); }
+  .paper-cta .pc-left { flex: 1; min-width: 260px; }
+  .pc-kicker { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 6px; }
+  .pc-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
+  .pc-sub { color: var(--muted); font-size: 0.88rem; margin-top: 6px; max-width: 60ch; }
+  .engine-link { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 24px; }
+  .engine-link .el-txt { font-size: 0.94rem; color: var(--muted); } .engine-link .el-txt b { color: var(--ink); }
+  .btn { display: inline-block; text-decoration: none; font-weight: 700; font-size: 0.88rem;
+    padding: 10px 20px; border-radius: 10px; background: var(--gold); color: #0d1117; white-space: nowrap; }
+  .btn:hover { filter: brightness(1.08); }
+
+  footer { margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted);
+    font-size: 0.82rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  footer a { color: var(--data); text-decoration: none; }
+
+  @media (max-width: 720px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .verdict-grid { grid-template-columns: 1fr; }
+    .hero-score { grid-template-columns: 1fr; } .hs-mid { order: -1; }
+    .bar-row { grid-template-columns: 88px 1fr 44px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">FIFA World Cup 2026 · Final Report</p>
+    <h1>The model called the <span class="glow">champion</span>.</h1>
+    <p class="dek">PitchProb logged a frozen, timestamped prediction for every match <strong>before kickoff</strong> — a public audit trail, no hindsight. Below, watch every contender's title odds rise and fall across the whole tournament, then see exactly how those 103 pre-registered forecasts held up.</p>
+  </header>
+
+  <div class="race">
+    <div class="race-head">
+      <div>
+        <div class="race-title">🏆 The road to the trophy — title odds, every day</div>
+        <div class="race-sub">Championship probability re-simulated at each stage, using only results known at that point</div>
+      </div>
+      <button class="replay" id="replay">↻ replay</button>
+    </div>
+    <div class="race-svg-wrap" id="race-svg-wrap"></div>
+    <p class="race-cap">Each line is one team's live chance of winning the cup. <b>Spain</b> (gold) opened as the model's favourite, slipped to 17% when the group stage tightened, then climbed relentlessly through the knockouts to lift it. <b>Argentina</b> surged to 40% before the final. Every other qualifier is the grey pack behind them.</p>
+  </div>
+
+  <div class="hero-score">
+    <div class="hs-side"><div class="hs-flag">🇪🇸</div><div class="hs-name">Spain</div><div class="hs-role">Pre-tournament #1 · Champion</div></div>
+    <div class="hs-mid"><div class="hs-scoreline">1 – 0</div><div class="hs-tag">The Final · Jul 19</div></div>
+    <div class="hs-side"><div class="hs-flag">🇦🇷</div><div class="hs-name">Argentina</div><div class="hs-role">Pre-tournament #2 · Runner-up</div></div>
+    <div class="hs-called">Weeks before the knockouts, <b>Argentina vs Spain</b> was the model's single most-likely final — <b>19.7%</b> of 62 possible pairings — and it favoured <b>Spain</b> to win it (51%). Both landed. The top two seeds finished exactly first and second.</div>
+  </div>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">The scorecard</h2></div>
+    <p class="sec-sub">103 matches, each with a frozen pre-kickoff forecast and a final result. Standard metrics for probabilistic forecasts — accuracy on the win/draw/win result, and Brier score on the full probability vector (lower is better).</p>
+    <div class="tiles">
+      <div class="tile t-win"><div class="tile-fig">63.1<span class="unit">%</span></div><div class="tile-label">3-way accuracy</div><div class="tile-note">65 of 103. Random ≈ 33%, bookmaker favourites ≈ 50–55%.</div></div>
+      <div class="tile t-data"><div class="tile-fig">0.511</div><div class="tile-label">Brier score</div><div class="tile-note">Matched the pre-tournament backtest (0.508) almost exactly.</div></div>
+      <div class="tile t-gold"><div class="tile-fig">73.5<span class="unit">%</span></div><div class="tile-label">Knockout accuracy</div><div class="tile-note">25 of 34. Sharper without dead-rubber noise.</div></div>
+      <div class="tile t-data"><div class="tile-fig">9.7<span class="unit">%</span></div><div class="tile-label">Exact scoreline</div><div class="tile-note">10 of 103 called to the exact goals — hard by design.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Better than the baselines that matter</h2></div>
+    <p class="sec-sub">Accuracy only means something against what you'd get for free. The model cleared every naive baseline and landed in the range professional, paywalled models occupy.</p>
+    <div class="bars">
+      <div class="bar-row"><div class="bar-lab"><b>PitchProb</b></div><div class="bar-track"><div class="bar-fill f-model" style="width:63.1%">63.1%</div></div><div class="bar-val">63.1%</div></div>
+      <div class="bar-row"><div class="bar-lab">Bookmaker favourite</div><div class="bar-track"><div class="bar-fill f-book" style="width:53%">~53%</div></div><div class="bar-val" style="color:var(--muted)">~53%</div></div>
+      <div class="bar-row"><div class="bar-lab">Always "home"</div><div class="bar-track"><div class="bar-fill f-rand" style="width:47.6%">47.6%</div></div><div class="bar-val" style="color:var(--muted)">47.6%</div></div>
+      <div class="bar-row"><div class="bar-lab">Coin-flip (3-way)</div><div class="bar-track"><div class="bar-fill f-rand" style="width:33.3%">33%</div></div><div class="bar-val" style="color:var(--muted)">33.3%</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Where it was wrong: too humble</h2></div>
+    <p class="sec-sub">Calibration is the real test of a probability model — when it says 60%, does that happen 60% of the time? Pooling all 309 forecasts, one pattern was clear: <strong style="color:var(--ink)">the model's favourites won more often than it predicted.</strong> This World Cup had fewer upsets than the odds implied.</p>
+    <div class="card">
+      <div class="calib">
+        <div class="cal-row"><div class="cal-band">40–50% said</div><div class="cal-pair">
+          <div class="cal-line"><span class="cal-key">Predicted</span><div class="cal-bar cal-pred" style="width:45%"></div><span class="cal-num">45%</span></div>
+          <div class="cal-line"><span class="cal-key">Actual</span><div class="cal-bar cal-act" style="width:68%"></div><span class="cal-num">68%</span></div></div></div>
+        <div class="cal-row"><div class="cal-band">50–60% said</div><div class="cal-pair">
+          <div class="cal-line"><span class="cal-key">Predicted</span><div class="cal-bar cal-pred" style="width:55%"></div><span class="cal-num">55%</span></div>
+          <div class="cal-line"><span class="cal-key">Actual</span><div class="cal-bar cal-act" style="width:72%"></div><span class="cal-num">72%</span></div></div></div>
+        <div class="cal-row"><div class="cal-band">60–75% said</div><div class="cal-pair">
+          <div class="cal-line"><span class="cal-key">Predicted</span><div class="cal-bar cal-pred" style="width:66%"></div><span class="cal-num">66%</span></div>
+          <div class="cal-line"><span class="cal-key">Actual</span><div class="cal-bar cal-act" style="width:80%"></div><span class="cal-num">80%</span></div></div></div>
+      </div>
+      <p style="margin-top:18px">Expected Calibration Error came to <b>0.083</b> — decent, not immaculate, and exactly the kind of thing a single 104-match tournament is too small to pin down. The honest read: <b>directionally underconfident in strong teams</b>, on a sample too thin for a stronger claim.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">The honest null result</h2></div>
+    <p class="sec-sub">The one genuinely novel piece was the context layer — nudging each match for stadium heat, rest days and travel distance. So: did it work?</p>
+    <div class="card null-card">
+      <p class="lede">No. On this tournament, the hand-tuned context layer did not improve the forecasts.</p>
+      <div class="null-figs">
+        <div class="null-fig"><div class="nf">63.1%</div><div class="nl">accuracy — with context</div></div>
+        <div class="null-fig"><div class="nf">63.1%</div><div class="nl">accuracy — plain Elo</div></div>
+        <div class="null-fig"><div class="nf" style="color:var(--miss)">+0.0010</div><div class="nl">Brier change (worse)</div></div>
+      </div>
+      <p>Across the 80 matches where heat, rest or travel moved the numbers, removing the whole context layer changed accuracy by zero and nudged Brier a hair the <b>wrong</b> way. The adjustments were built from research priors, not fit to data — and it shows. <b>Reporting this is the point:</b> the public track record existed precisely so a null like this couldn't be quietly buried.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Is it a paper?</h2></div>
+    <p class="sec-sub">The straight answer: not a traditional methods paper — but there's a genuine, publishable artifact inside this if it's framed for what it actually is.</p>
+    <div class="verdict-grid">
+      <div class="vc no"><h3>✕ Not as novel methodology</h3><ul>
+        <li>Elo + Poisson + Monte Carlo is textbook — decades old, not a contribution</li>
+        <li>n = 103 is one tournament: too small to statistically validate a model</li>
+        <li>The context layer's headline result is a null — no measured edge to claim</li></ul></div>
+      <div class="vc yes"><h3>✓ Yes as a pre-registered case study</h3><ul>
+        <li>Every forecast was timestamped and frozen <em>before</em> kickoff — a real audit trail, the strongest scientific asset here</li>
+        <li>Honest calibration plus a reported null is exactly the integrity reviewers reward</li>
+        <li>Fits an applied venue (e.g. Sloan Sports Analytics) or a solid preprint / writeup</li></ul></div>
+    </div>
+    <div class="paper-cta">
+      <div class="pc-left">
+        <div class="pc-kicker">📄 Preprint</div>
+        <div class="pc-title">The full write-up is done.</div>
+        <div class="pc-sub">A pre-registered evaluation, the calibration analysis, and the fitted-context null result — including a rest-day effect learned from 15,817 historical matches, with a coefficient statistically indistinguishable from zero.</div>
+      </div>
+      <a class="btn" href="/pitchprob-paper.pdf" target="_blank" rel="noopener" onclick="try{gtag('event','paper_download')}catch(e){}">Read the paper (PDF) →</a>
+    </div>
+  </section>
+
+  <section>
+    <div class="engine-link">
+      <div class="el-txt"><b>The live engine is still here.</b> Explore the full bracket, every match prediction, and the methodology behind the model.</div>
+      <a class="btn" href="/engine.html">Open the prediction engine →</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>PitchProb · World Cup 2026 · 103 pre-registered forecasts, evaluated honestly</span>
+    <span><a href="https://www.linkedin.com/in/ranausmans/">Rana Usman</a> · <a href="https://github.com/ranausmanai">GitHub</a></span>
+  </footer>
+</div>
+
+<script>
+const ODDS = {"labels":["Pre-tournament","2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-19","2026-06-20","2026-06-21","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-27","2026-06-28","2026-06-29","2026-06-30","2026-07-01","2026-07-02","2026-07-03","2026-07-04","2026-07-05","2026-07-06","2026-07-07","2026-07-09","2026-07-10","2026-07-11","2026-07-12","2026-07-14","2026-07-15","2026-07-18","2026-07-19","Champion"],
+"series":[["Spain",239,244,226,234,220,230,189,176,183,179,170,176,194,195,180,187,177,192,202,212,200,198,180,203,205,210,206,332,326,307,400,435,409,541,516,426,1000],["Argentina",146,144,156,162,146,143,184,168,206,186,201,188,196,227,236,212,228,225,210,206,220,196,212,212,227,214,198,178,187,165,164,143,224,210,316,404,0],["France",108,80,94,78,97,94,90,116,106,111,102,104,106,110,114,108,106,124,128,124,110,132,127,115,111,138,156,144,119,196,172,158,156,42,36,2,0],["England",66,76,74,72,85,72,72,81,84,94,86,92,79,80,58,56,56,56,60,51,56,62,77,66,70,58,61,112,136,126,102,136,119,118,34,78,0],["Brazil",42,36,34,40,46,44,44,40,38,36,35,38,40,28,38,43,55,60,57,59,114,102,108,95,92,102,0,0,0,0,0,0,0,0,0,0,0],["Norway",18,15,23,22,20,22,20,22,26,32,26,26,31,24,38,34,30,21,22,18,20,25,34,26,30,30,98,87,80,71,70,36,33,32,38,33,0],["Mexico",52,52,58,52,58,74,58,70,49,47,62,56,62,44,54,53,52,48,51,56,48,56,62,66,57,46,53,0,0,0,0,0,0,0,0,0,0],["Colombia",36,44,38,46,40,38,40,39,50,54,56,56,54,52,54,54,56,59,68,60,64,62,48,56,54,59,71,54,40,42,40,42,28,25,32,22,0],["Germany",28,34,27,28,24,43,46,54,36,42,37,44,41,50,40,44,32,36,33,28,22,22,24,20,18,19,24,21,22,18,10,14,14,10,8,13,0],["Portugal",29,40,41,37,31,22,31,34,21,22,24,21,21,17,34,41,34,28,29,22,23,30,22,44,47,42,47,2,4,2,3,3,2,4,2,2,0],["Ecuador",38,42,37,32,35,14,20,12,12,11,15,12,4,5,3,3,12,15,16,20,14,16,4,7,4,4,6,5,2,4,6,6,4,3,4,4,0],["United States",8,7,3,6,19,27,24,20,24,20,34,40,42,34,32,34,40,23,17,12,18,14,12,15,14,12,12,9,0,2,2,1,0,0,1,2,0]]};
+
+const W = 960, H = 460, ML = 40, MR = 92, MT = 34, MB = 28;
+const PX0 = ML, PX1 = W - MR, PY0 = MT, PY1 = H - MB;
+const N = ODDS.labels.length;
+const xs = i => PX0 + (i/(N-1)) * (PX1-PX0);
+const ys = v => PY1 - (v/1000) * (PY1-PY0);
+// phase bands: [startIdx, endIdx, label]
+const phases = [[0,18,"Group stage"],[18,24,"Round of 32"],[24,28,"R16"],[28,32,"QF"],[32,35,"SF"],[35,36,"Final"]];
+const STYLE = {
+  "Spain": {c:"#e8bb4d", w:3.6, glow:true, label:true},
+  "Argentina": {c:"#5aa7ff", w:2.4, label:true},
+};
+const PACK = {c:"#46536a", w:1.3, op:0.5};
+
+function pathFor(arc) {
+  return arc.map((v,i)=> (i?"L":"M") + xs(i).toFixed(1) + " " + ys(v).toFixed(1)).join(" ");
+}
+
+function buildChart() {
+  const svg = ['<svg class="race-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Championship probability over the tournament">'];
+  svg.push('<defs><filter id="gl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>');
+  // phase bands
+  phases.forEach((p,i)=>{
+    const x0=xs(p[0]), x1=xs(p[1]);
+    svg.push('<rect class="phase-band '+(i%2?'alt':'')+'" x="'+x0.toFixed(1)+'" y="'+PY0+'" width="'+(x1-x0).toFixed(1)+'" height="'+(PY1-PY0)+'"/>');
+    svg.push('<text class="phase-lab" x="'+((x0+x1)/2).toFixed(1)+'" y="'+(PY0-8)+'" text-anchor="middle">'+p[2]+'</text>');
+  });
+  // y gridlines at 0,25,50,75,100%
+  [0,250,500,750,1000].forEach(v=>{
+    const y=ys(v);
+    svg.push('<line class="grid-line" x1="'+PX0+'" y1="'+y.toFixed(1)+'" x2="'+PX1+'" y2="'+y.toFixed(1)+'"/>');
+    svg.push('<text class="axis-txt" x="'+(PX0-6)+'" y="'+(y+3).toFixed(1)+'" text-anchor="end">'+(v/10)+'%</text>');
+  });
+  // pack lines first (behind)
+  ODDS.series.forEach(s=>{
+    const name=s[0], arc=s.slice(1);
+    if (STYLE[name]) return;
+    svg.push('<path class="team-line" pathLength="1" d="'+pathFor(arc)+'" stroke="'+PACK.c+'" stroke-width="'+PACK.w+'" opacity="'+PACK.op+'"/>');
+  });
+  // highlighted lines on top
+  ["Argentina","Spain"].forEach(name=>{
+    const s=ODDS.series.find(x=>x[0]===name); const arc=s.slice(1); const st=STYLE[name];
+    svg.push('<path class="team-line" pathLength="1" d="'+pathFor(arc)+'" stroke="'+st.c+'" stroke-width="'+st.w+'"'+(st.glow?' filter="url(#gl)"':'')+'/>');
+  });
+  // end labels + dots for highlighted
+  ["Spain","Argentina"].forEach(name=>{
+    const s=ODDS.series.find(x=>x[0]===name); const arc=s.slice(1); const st=STYLE[name];
+    const lastPos = name==="Spain" ? arc.length-1 : arc.length-2; // Argentina ends at 0 (lost final), label its peak-final point
+    const x=xs(arc.length-1), y=ys(arc[arc.length-1]);
+    // for Argentina, anchor label at the final match (before it drops to 0)
+    const ax = name==="Spain" ? xs(arc.length-1) : xs(35);
+    const ay = name==="Spain" ? ys(1000) : ys(arc[35]);
+    svg.push('<circle class="end-dot" cx="'+ax.toFixed(1)+'" cy="'+ay.toFixed(1)+'" r="4.5" fill="'+st.c+'"/>');
+    const txt = name==="Spain" ? "Spain 100%" : "Argentina";
+    svg.push('<text class="end-lab" x="'+(ax+9).toFixed(1)+'" y="'+(ay+4).toFixed(1)+'" fill="'+st.c+'">'+txt+'</text>');
+  });
+  // x axis: a few date ticks
+  [0,9,18,28,36].forEach(i=>{
+    const lab = ODDS.labels[i]==="Pre-tournament"?"Start":ODDS.labels[i]==="Champion"?"Final":ODDS.labels[i].slice(5);
+    svg.push('<text class="axis-txt" x="'+xs(i).toFixed(1)+'" y="'+(PY1+18)+'" text-anchor="middle">'+lab+'</text>');
+  });
+  svg.push('</svg>');
+  return svg.join("");
+}
+
+function animate() {
+  const lines = document.querySelectorAll('.team-line');
+  const labs = document.querySelectorAll('.end-lab, .end-dot');
+  lines.forEach(l=>{ l.classList.remove('draw'); void l.offsetWidth; });
+  labs.forEach(l=>l.classList.remove('show'));
+  requestAnimationFrame(()=>{ lines.forEach(l=>l.classList.add('draw')); setTimeout(()=>labs.forEach(l=>l.classList.add('show')), 100); });
+}
+
+document.getElementById('race-svg-wrap').innerHTML = buildChart();
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!reduce) {
+  // animate when scrolled into view (or immediately if already visible)
+  const wrap = document.getElementById('race-svg-wrap');
+  const io = new IntersectionObserver((es)=>{ es.forEach(e=>{ if(e.isIntersecting){ animate(); io.disconnect(); } }); }, {threshold:0.3});
+  io.observe(wrap);
+}
+document.getElementById('replay').addEventListener('click', ()=>{ if(!reduce) animate(); try{gtag('event','replay_race');}catch(e){} });
+</script>
+</body>
+</html>

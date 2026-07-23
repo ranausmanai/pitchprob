@@ -1,0 +1,15 @@
+[Unit]
+Description=PitchProb prediction API
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /root/pitchprob_api.py
+Restart=on-failure
+RestartSec=3
+User=root
+StandardOutput=append:/var/log/pitchprob-api.log
+StandardError=append:/var/log/pitchprob-api.log
+
+[Install]
+WantedBy=multi-user.target

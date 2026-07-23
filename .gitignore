@@ -1,0 +1,8 @@
+.claude/
+scratchpad/
+__pycache__/
+*.pyc
+.DS_Store
+/tmp/
+analysis/paper_print.html
+analysis/report-og.png
