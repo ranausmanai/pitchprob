@@ -5,6 +5,9 @@ Independent researcher · pitchprob.xyz · usmanashrafrana@gmail.com
 
 ---
 
+*"All that I know most surely about morality and obligations, I owe to football."*
+— Albert Camus
+
 ## Abstract
 
 Public football forecasts are seldom pre-registered: they are typically reported after outcomes are known, are not timestamped, and can be revised or selectively highlighted, which frustrates honest evaluation. We describe a deliberately auditable alternative. For all 104 matches of the 2026 FIFA World Cup, a live system committed a full win/draw/loss probability vector and a most-likely scoreline *before each kickoff*, timestamped to an append-only, publicly mirrored log (810 snapshots). The forecaster composes an importance-weighted Elo rating (estimated on 49,405 international matches, 1872–2026), a bivariate-Poisson goal model with a Dixon–Coles low-score correction, and a Monte Carlo simulation of the remaining tournament. On the 103 matches with a matched pre-kickoff forecast, three-way accuracy was 63.1% (Wilson 95% CI [0.535, 0.718]). Against a climatological base-rate reference the model showed positive skill on every proper score — Brier skill score +0.195, ranked-probability skill score +0.277, logarithmic skill +0.174 — and a Wilcoxon signed-rank test on per-match Brier scores rejects equality with the reference at $p \approx 3\times10^{-5}$. A Murphy decomposition attributes the Brier score to low reliability (0.013) and substantial resolution (0.066); the reliability diagram indicates mild *under*-confidence, this tournament having produced fewer upsets than the forecasts implied. We then test whether the model's match-context adjustments (heat, rest, travel) carry usable signal by *estimating* rather than assuming them. A rest-day differential fit on 15,817 historical matches yields a coefficient indistinguishable from zero (bootstrap 95% CI [−0.045, +0.058]) with no out-of-sample improvement in blocked cross-validation or on the held-out World Cup; stadium temperature shows no detectable effect and a sign opposite to the assumed adjustment. We report these as robust nulls at the resolution one tournament affords. The contribution is not a new method but a transparent, reproducible evaluation protocol — commit, log publicly, report the nulls — which we advocate as a lightweight standard for public sports forecasting.
@@ -77,7 +80,7 @@ Round-by-round and championship probabilities come from $N=10{,}000$ Monte Carlo
 
 ### 4.5 Context adjustments (the object of Section 8)
 
-The deployed model additionally perturbed each match by stadium heat (apparent temperature above $26^\circ$C reducing $\lambda$ and compressing $x$), a rest-day differential, and inter-venue travel distance. Crucially, these adjustments were set from qualitative priors, *not* estimated — motivating the test in Section 7.
+The deployed model additionally perturbed each match by stadium heat (apparent temperature above $26^\circ$C reducing $\lambda$ and compressing $x$), a rest-day differential, and inter-venue travel distance. Crucially, these adjustments were set from qualitative priors, *not* estimated — motivating the test in Section 8.
 
 ## 5. Pre-registration protocol
 
@@ -91,7 +94,7 @@ Let a forecast be $\mathbf{\hat p}=(\hat p_H,\hat p_D,\hat p_A)$ and the realise
 - **Brier score** [Brier 1950]: $\mathrm{BS}=\frac1n\sum_m\lVert\mathbf{\hat p}_m-\mathbf{o}_m\rVert_2^2$.
 - **Ranked probability score** [Epstein 1969], for the ordered outcome $H\succ D\succ A$: $\mathrm{RPS}=\frac1n\sum_m\frac{1}{2}\sum_{k=1}^{2}\big(\textstyle\sum_{j\le k}\hat p_{m,j}-\sum_{j\le k}o_{m,j}\big)^2$.
 - **Logarithmic score:** $\mathrm{LS}=-\frac1n\sum_m\log \hat p_{m,\,y_m}$.
-- **Skill scores** against a climatological reference $\mathbf{\bar p}$ (the empirical base rates $H{=}0.48,D{=}0.23,A{=}0.29$): $\mathrm{SS}=1-\mathrm{score}_{\text{model}}/\mathrm{score}_{\text{ref}}$; positive values indicate improvement over always issuing the base rates.
+- **Skill scores** against a climatological reference $\mathbf{\bar p}$ (the empirical base rates $H{=}0.48,D{=}0.23,A{=}0.29$): $\mathrm{SS}=1-\mathrm{score}_{\text{model}}/\mathrm{score}_{\text{ref}}$; positive values indicate improvement over always issuing the base rates. Because the reference uses the tournament's own realised frequencies — information the model did not have — this choice favours the reference, making the reported skill conservative.
 - **Murphy decomposition** [Murphy 1973] of the Brier score into reliability, resolution, and uncertainty, $\mathrm{BS}=\mathrm{REL}-\mathrm{RES}+\mathrm{UNC}$, with reliability and resolution estimated on $K=10$ probability bins.
 - **Reliability diagram** with per-bin Wilson intervals and a forecast-sharpness histogram.
 
@@ -118,7 +121,7 @@ On the 103 matched forecasts the model's argmax matched the result in 65 cases, 
 
 ### 7.2 Calibration
 
-Pooling all 309 forecast–outcome pairs and binning by predicted probability yields the reliability diagram of Figure 2. The Murphy decomposition gives reliability $0.013$ (near zero is good), resolution $0.066$, and uncertainty $0.222$; the small reliability term confirms the forecasts are close to calibrated, and the substantial resolution confirms they are informative rather than hedged toward the base rate. The residual miscalibration is directional: in the upper bins the curve sits *above* the diagonal — outcomes assigned 40–50%, 50–60%, and 60–75% occurred 68%, 72%, and 80% of the time — i.e. the model was mildly **under**-confident in favourites. The most economical reading is that this particular tournament produced fewer upsets than the forecasts implied; with 103 matches the per-bin intervals are wide, and we report the direction rather than a precise miscalibration magnitude.
+Pooling all 309 forecast–outcome pairs and binning by predicted probability yields the reliability diagram of Figure 2. The Murphy decomposition — computed on the pooled binary forecasts, whose mean Brier of $0.170$ is one third of the three-component vector score — gives reliability $0.013$ (near zero is good), resolution $0.066$, and uncertainty $0.222$; the small reliability term confirms the forecasts are close to calibrated, and the substantial resolution confirms they are informative rather than hedged toward the base rate. The residual miscalibration is directional: in the upper bins the curve sits *above* the diagonal — outcomes assigned 40–50%, 50–60%, and 60–75% occurred 68%, 72%, and 80% of the time — i.e. the model was mildly **under**-confident in favourites. The most economical reading is that this particular tournament produced fewer upsets than the forecasts implied; with 103 matches the per-bin intervals are wide, and we report the direction rather than a precise miscalibration magnitude.
 
 ![Figure 2](fig2_reliability.png)
 
@@ -140,7 +143,7 @@ The deployed context adjustments (Section 4.5) were assumed, not estimated. A fa
 
 For each match we compute each side's days since its previous fixture (capped at 14) and the home-minus-away differential $r$ (scaled to $[-1,1]$). We augment the goal model with a rest term,
 $$ \lambda_H = \exp(a + b\,x + c\,r), \qquad \lambda_A = \exp(a - b\,x - c\,r), $$
-and estimate $c$ by Poisson maximum likelihood on training data only. We evaluate two ways. First, **blocked (expanding-window) cross-validation** over 2010–2026 (15,817 matches, five time-ordered folds): adding the fitted term changed mean out-of-sample Brier by $+0.0000$ ($0.5156\to0.5157$) and log loss by $+0.0001$, and the fitted coefficient was small and *sign-unstable* across folds ($+0.010,-0.012,+0.009,+0.010,+0.016$). Second, a **held-out test on the World Cup**: fitting $c$ on all pre-tournament history and scoring the 103 tournament forecasts changed Brier by $-0.0000$. A full-history fit gives $\hat c=+0.004$ with a bootstrap 95% CI of **[−0.045, +0.058]** (Figure 4), comfortably spanning zero. Whether assumed or optimally estimated, the rest-day differential yields no measurable forecasting improvement.
+and estimate $c$ by Poisson maximum likelihood on training data only. We evaluate two ways. First, **blocked (expanding-window) cross-validation** over 2010–2026 (15,817 matches, five time-ordered folds): adding the fitted term changed mean out-of-sample Brier by $+0.0001$ ($0.5156\to0.5157$) and log loss by $+0.0001$, and the fitted coefficient was small and *sign-unstable* across folds ($+0.010,-0.012,+0.009,+0.010,+0.016$). Second, a **held-out test on the World Cup**: fitting $c$ on all pre-tournament history and scoring the 103 tournament forecasts left the Brier score unchanged to four decimal places ($|\Delta|<10^{-4}$). A full-history fit gives $\hat c=+0.004$ with a bootstrap 95% CI of **[−0.045, +0.058]** (Figure 4), comfortably spanning zero. Whether assumed or optimally estimated, the rest-day differential yields no measurable forecasting improvement.
 
 ![Figure 4](fig4_rest_null.png)
 
@@ -156,7 +159,7 @@ Among the 98 tournament matches with a logged apparent temperature (13–40°C, 
 
 ### 8.3 Interpretation
 
-A rest coefficient statistically indistinguishable from zero with a tight interval, no out-of-sample gain, and no detectable temperature effect together make the context layer's contribution a robust null at the available resolution. This does not prove conditions never matter; it shows that, for results-only international-match forecasting, any such signal lies below what the rating already captures and below what these samples can resolve. The concrete lesson is that the model's most elaborate features added nothing — and the pre-registered record made that impossible to omit.
+A rest coefficient statistically indistinguishable from zero, no out-of-sample gain, and no detectable temperature effect together make the context layer's contribution a robust null at the available resolution. This does not prove conditions never matter; it shows that, for results-only international-match forecasting, any such signal lies below what the rating already captures and below what these samples can resolve. The concrete lesson is that the model's most elaborate features added nothing — and the pre-registered record made that impossible to omit.
 
 ## 9. Discussion and limitations
 
