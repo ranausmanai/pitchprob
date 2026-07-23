@@ -16,7 +16,7 @@ Rana Usman
 **Cross-list:** `cs.LG` (Machine Learning), optionally `stat.ME`
 
 **Comments field** (paste into arXiv "Comments"):
-> 10 pages, 5 figures, 1 table. Pre-registered forecast log, results, and analysis code available at [repo URL]. Live system and report: https://pitchprob.xyz
+> 10 pages, 5 figures, 1 table. Pre-registered forecast log, results, and analysis code available at https://github.com/ranausmanai/pitchprob. Live system and report: https://pitchprob.xyz
 
 **License:** CC BY 4.0 (recommended — maximizes citation/reuse)
 
@@ -57,7 +57,7 @@ Sloan's research competition rewards *applied insight and rigor over methodologi
 
 ## D. Before submitting — a short checklist
 
-- [ ] Push the repo public (prediction log, results, `exp_context.py`, `reconstruct_odds.py`, model builder) and fill in `[repo URL]` above.
+- [x] Repo public at https://github.com/ranausmanai/pitchprob; URL filled in above.
 - [ ] Add a `LICENSE` (MIT for code, CC BY 4.0 for the paper/data).
 - [x] Five publication figures included (title-odds race, reliability diagram, running Brier, rest-day null, heat scatter). One more human proofreading pass on the PDF is still worthwhile.
 - [ ] Optionally register the pre-registration claim's provenance: note the server log's first/last timestamps in an appendix so the "before kickoff" claim is checkable.

@@ -171,7 +171,7 @@ We deployed a standard football forecasting model for the 2026 World Cup under a
 
 ## Reproducibility
 
-The pre-registered prediction log (810 snapshots), match results, historical rating inputs, figure-generation and experiment code (including fold dates and the bootstrap seed) are released at the project repository; the live system and its report are at pitchprob.xyz.
+The pre-registered prediction log (810 snapshots), match results, historical rating inputs, figure-generation and experiment code (including fold dates and the bootstrap seed) are released at github.com/ranausmanai/pitchprob ; the live system and its report are at pitchprob.xyz.
 
 ## Acknowledgements
 
