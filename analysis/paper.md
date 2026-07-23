@@ -1,4 +1,4 @@
-# Predicting the 2026 World Cup in Public: A Pre-Registered Evaluation of an Elo–Poisson Forecasting Model and a Null Result for Match-Context Adjustments
+# Nothing Up Our Sleeve: A Pre-Registered Elo–Poisson Forecast of the 2026 World Cup, and a Null Result for Match-Context Adjustments
 
 **Rana Usman**
 Independent researcher · pitchprob.xyz · usmanashrafrana@gmail.com

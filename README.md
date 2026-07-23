@@ -71,7 +71,7 @@ python3 build_wc_model.py     # → site/wc_model.json (Elo, goal map, bracket, 
 
 ## Citation
 
-> Usman, R. (2026). *Predicting the 2026 World Cup in Public: A Pre-Registered Evaluation of an Elo–Poisson Forecasting Model and a Null Result for Match-Context Adjustments.* Preprint.
+> Usman, R. (2026). *Nothing Up Our Sleeve: A Pre-Registered Elo–Poisson Forecast of the 2026 World Cup, and a Null Result for Match-Context Adjustments.* Preprint.
 
 ## License
 
